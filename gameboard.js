@@ -3,7 +3,7 @@ var GameBoard = (function () {
     var
         columns = Config.columns,
         rows = Config.rows,
-        node;
+        nodes = [];
 
 
     function update() {
@@ -50,23 +50,30 @@ var GameBoard = (function () {
 
         });
 
-        if (!node) {
+        if (nodes.length < Config.numberOfSnakeFoodNodes) {
 
-            let x = random(Config.columns - 1),
-                y = random(Config.rows - 1);
+            while (nodes.length < Config.numberOfSnakeFoodNodes) {
 
-            if (!Snake.nodes().find(n => n.X() == x && n.Y() == y)) {
-                node = new Node(x, y, "Blue");
-                node.draw();
+                let x = random(Config.columns - 1),
+                    y = random(Config.rows - 1);
+
+                if (!Snake.nodes().find(n => n.X() == x && n.Y() == y) && !nodes.find(n => n.X() == x && n.Y() == y)) {
+                    nodes.push(new Node(x, y, "Blue"));
+                }
+
             }
 
-        } else {
-            node.draw();
         }
 
-        if (Snake.isCollision(node.X(), node.Y())) {
-            Snake.addNode();
-            node = null;
+        for (let i = 0; i < nodes.length; i++) {
+            if (Snake.isCollision(nodes[i].X(), nodes[i].Y())) {
+                Snake.addNode();
+                nodes.splice(i, 1);
+            }
+        }
+
+        for (let i = 0; i < nodes.length; i++) {
+            nodes[i].draw();
         }
 
     }
